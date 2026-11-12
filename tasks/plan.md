@@ -48,6 +48,21 @@ A beginner-friendly web application built with Python, Streamlit, and Supabase. 
 
 ---
 
+### Phase 4: Feature Enhancements
+- [x] **Task 6: Feature 1 — Delete Expense Button**
+  - Add `delete_expense(expense_id)` to `src/database.py` (Supabase deletion and local session removal).
+  - Add delete action button next to each purchase in `src/app.py`.
+  - Add automated tests in `tests/test_database.py` and `tests/test_app.py`.
+- [ ] **Task 7: Feature 2 — Browse Past Weeks Navigation**
+  - Add week offset selector (`◀ Last Week`, `This Week`, `Next Week ▶`) in `src/app.py`.
+  - Filter spending and category totals according to selected week.
+- [ ] **Task 8: Feature 3 — Weekly Budget Goal & Progress Bar**
+  - Add weekly budget setting and visual progress meter indicating remaining balance.
+- [ ] **Task 9: Feature 4 — Visual Spending Pie Chart**
+  - Add a category spending donut/pie chart to visualize proportions.
+
+---
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

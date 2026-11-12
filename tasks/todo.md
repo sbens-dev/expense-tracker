@@ -103,3 +103,67 @@
 - [x] Sync across devices is enabled via Supabase.
 - [x] Full test suite passes.
 - [x] Ready for final review.
+
+---
+
+## Phase 4: Feature Enhancements
+
+### Task 6: Feature 1 — Delete Expense Button (Fix Mistakes Easily)
+- **Description:** Allow users to delete a purchase with one click. Supports deleting by `id` in Supabase when in cloud mode, and removing from `st.session_state.expenses` when in local preview mode.
+- **Acceptance criteria:**
+  - [x] `delete_expense(expense_id)` implemented in `src/database.py` with safe error handling.
+  - [x] Delete button (🗑️) appears next to each purchase in `src/app.py`.
+  - [x] Clicking delete removes the purchase and immediately recalculates the weekly total and category breakdown.
+  - [x] Unit tests in `tests/test_database.py` and `tests/test_app.py` verify deletion in both cloud and local mode.
+- **Verification:**
+  - [x] `pytest` passes with all tests green.
+- **Dependencies:** Task 5
+- **Files likely touched:**
+  - `src/database.py`
+  - `src/app.py`
+  - `tests/test_database.py`
+- **Estimated scope:** S (3 files)
+
+---
+
+### Task 7: Feature 2 — Browse Past Weeks Navigation
+- **Description:** Provide navigation buttons (`◀ Previous Week`, `Current Week`, `Next Week ▶`) to view spending in previous or future weeks.
+- **Acceptance criteria:**
+  - [ ] Users can browse past weeks and see totals update for that specific 7-day period.
+  - [ ] A "Back to This Week" shortcut returns to the current date.
+- **Verification:**
+  - [ ] Automated tests verify date shifting and week boundaries.
+- **Dependencies:** Task 6
+- **Files likely touched:**
+  - `src/app.py`
+  - `src/calculations.py`
+- **Estimated scope:** S (2 files)
+
+---
+
+### Task 8: Feature 3 — Weekly Budget Goal & Progress Bar
+- **Description:** Let users define a weekly budget goal and see a visual progress bar indicating spent vs. remaining money.
+- **Acceptance criteria:**
+  - [ ] Budget input field allows setting a target (e.g. $300).
+  - [ ] Progress bar displays percentage used, dollar amount remaining, and color feedback.
+- **Verification:**
+  - [ ] Calculation tests for budget percentages.
+- **Dependencies:** Task 7
+- **Files likely touched:**
+  - `src/app.py`
+  - `src/calculations.py`
+- **Estimated scope:** S (2 files)
+
+---
+
+### Task 9: Feature 4 — Visual Spending Pie Chart
+- **Description:** Add an interactive or clean pie chart showing category spending proportions.
+- **Acceptance criteria:**
+  - [ ] Pie chart renders categories with spending > $0.
+  - [ ] Displays cleanly on mobile and desktop without crowding out the list.
+- **Verification:**
+  - [ ] App tests verify chart renders with data and handles empty state gracefully.
+- **Dependencies:** Task 8
+- **Files likely touched:**
+  - `src/app.py`
+- **Estimated scope:** S (1 file)

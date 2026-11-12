@@ -5,6 +5,7 @@ from src.database import (
     get_cloud_credentials,
     save_expense,
     fetch_expenses,
+    delete_expense,
 )
 
 
@@ -101,3 +102,47 @@ def test_fetch_expenses_success_with_mocked_supabase(mock_get_client):
     result = fetch_expenses()
     assert result == sample_data
     mock_client.table.assert_called_with("expenses")
+
+
+def test_delete_expense_rejects_invalid_id():
+    """Invalid or empty IDs must be rejected."""
+    success, msg = delete_expense(None)
+    assert not success
+    assert "Invalid" in msg
+
+    success_zero, _ = delete_expense(0)
+    assert not success_zero
+
+
+@patch("streamlit.secrets", {})
+def test_delete_expense_graceful_fallback_when_not_configured(monkeypatch):
+    """When cloud is not configured, delete_expense returns a clear fallback message."""
+    monkeypatch.delenv("SUPABASE_URL", raising=False)
+    monkeypatch.delenv("SUPABASE_KEY", raising=False)
+    success, msg = delete_expense(1)
+    assert not success
+    assert "not configured" in msg
+
+
+@patch("src.database.get_client")
+def test_delete_expense_success_with_mocked_supabase(mock_get_client):
+    """Verify delete sends delete instruction to Supabase table."""
+    mock_client = MagicMock()
+    mock_table = MagicMock()
+    mock_delete = MagicMock()
+    mock_eq = MagicMock()
+
+    mock_client.table.return_value = mock_table
+    mock_table.delete.return_value = mock_delete
+    mock_delete.eq.return_value = mock_eq
+    mock_eq.execute.return_value = MagicMock()
+    mock_get_client.return_value = mock_client
+
+    success, msg = delete_expense(42)
+    assert success
+    assert "deleted" in msg
+
+    mock_client.table.assert_called_with("expenses")
+    mock_table.delete.assert_called_once()
+    mock_delete.eq.assert_called_with("id", 42)
+

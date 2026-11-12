@@ -8,7 +8,7 @@ local temporary memory so the screen never crashes.
 """
 
 import os
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 import streamlit as st
 from supabase import create_client, Client
 from src.calculations import CATEGORIES
@@ -120,3 +120,31 @@ def fetch_expenses() -> Optional[list[dict]]:
     except Exception as e:
         st.error(f"Error loading expenses from cloud: {e}")
         return []
+
+
+def delete_expense(expense_id: Union[int, str, None]) -> Tuple[bool, str]:
+    """
+    Deletes an expense from Supabase by its unique ID.
+    
+    Security & Validation:
+    - ID must be provided and valid (positive number).
+    """
+    if expense_id is None:
+        return False, "Invalid expense ID."
+
+    try:
+        numeric_id = int(expense_id)
+        if numeric_id <= 0:
+            return False, "Invalid expense ID."
+    except (ValueError, TypeError):
+        return False, "Invalid expense ID."
+
+    client = get_client()
+    if not client:
+        return False, "Online database is not configured."
+
+    try:
+        client.table("expenses").delete().eq("id", numeric_id).execute()
+        return True, "Expense deleted successfully!"
+    except Exception as e:
+        return False, f"Failed to delete online: {e}"

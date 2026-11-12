@@ -33,6 +33,7 @@ try:
         is_cloud_configured,
         save_expense,
         fetch_expenses,
+        delete_expense,
     )
 except ModuleNotFoundError:
     from calculations import (  # type: ignore
@@ -46,6 +47,7 @@ except ModuleNotFoundError:
         is_cloud_configured,
         save_expense,
         fetch_expenses,
+        delete_expense,
     )
 
 # ---------------------------------------------------------
@@ -244,14 +246,32 @@ if current_week_expenses:
     sorted_expenses = sorted(
         current_week_expenses, key=lambda x: str(x["date"]), reverse=True
     )
-    for exp in sorted_expenses:
+    for i, exp in enumerate(sorted_expenses):
         with st.container():
-            c1, c2, c3 = st.columns([2, 2, 1])
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 1])
             desc_text = exp.get("description") or exp.get("category", "Expense")
             date_text = str(exp.get("date", ""))[:10]
             c1.markdown(f"**{desc_text}**<br><small style='color:gray'>{date_text}</small>", unsafe_allow_html=True)
             c2.markdown(f"<span style='background-color:#f0f2f6;padding:3px 8px;border-radius:4px;'>{exp['category']}</span>", unsafe_allow_html=True)
             c3.markdown(f"<div style='text-align:right;font-weight:bold;'>{format_currency(float(exp['amount']))}</div>", unsafe_allow_html=True)
+            
+            # Delete button (trash can)
+            btn_key = f"del_{exp.get('id', i)}_{i}"
+            if c4.button("🗑️", key=btn_key, help="Delete this purchase"):
+                if cloud_active and "id" in exp:
+                    ok, msg = delete_expense(exp["id"])
+                    if ok:
+                        st.success("Deleted purchase!")
+                        st.rerun()
+                    else:
+                        st.error(msg)
+                else:
+                    if exp in st.session_state.expenses:
+                        st.session_state.expenses.remove(exp)
+                    elif i < len(st.session_state.expenses):
+                        st.session_state.expenses.pop(i)
+                    st.success("Deleted purchase!")
+                    st.rerun()
             st.write("")
 else:
     st.info("No purchases recorded for this week yet. Use the form above to add one!")

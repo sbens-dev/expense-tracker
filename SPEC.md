@@ -16,6 +16,10 @@ Personal use for an individual wanting a fast, hassle-free way to track daily sp
    - A breakdown showing how much money was spent in each category this week.
 4. **Recent History:** As a user, I can view a list of this week's expenses so I can verify what I've entered.
 5. **Real-time Sync:** As a user, when I enter an expense on my phone, it appears on my computer without extra steps.
+6. **Delete Purchase:** As a user, I can tap a delete button next to any item in the list to remove an accidental entry or typo (in both Cloud and Local Preview mode).
+7. **Browse Past Weeks:** As a user, I can flip backward and forward through previous weeks using simple navigation buttons.
+8. **Weekly Budget Goal:** As a user, I can set a weekly spending budget (e.g., $300) and see a visual progress bar indicating how much money is left.
+9. **Visual Spending Chart:** As a user, I can see a visual pie chart showing what portion of my spending went to each category at a glance.
 
 ---
 
@@ -102,6 +106,10 @@ def calculate_weekly_total(expenses: list[dict]) -> float:
    - The grand total spent in the current week (Sunday through Saturday).
    - A breakdown showing total spent per category in USD ($).
 5. All calculations are verified by automated tests.
+6. **Feature 1 (Delete):** A user can click a delete button next to any item to remove it from the list and database.
+7. **Feature 2 (Past Weeks):** A user can navigate between past weeks and return to the current week.
+8. **Feature 3 (Budget Goal):** A user can set a weekly budget and see a progress bar indicating remaining funds.
+9. **Feature 4 (Pie Chart):** A user can see an interactive or clean pie chart of their category spending.
 
 ---
 
