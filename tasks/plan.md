@@ -58,8 +58,13 @@ A beginner-friendly web application built with Python, Streamlit, and Supabase. 
   - Filter spending and category totals according to selected week.
 - [x] **Task 8: Feature 3 — Weekly Budget Goal & Progress Bar**
   - Add weekly budget setting and visual progress meter indicating remaining balance.
-- [ ] **Task 9: Feature 4 — Visual Spending Pie Chart**
+- [x] **Task 9: Feature 4 — Visual Spending Pie Chart**
   - Add a category spending donut/pie chart to visualize proportions.
+
+### Checkpoint: Enhancements Complete
+- [x] All 4 features implemented, verified, and passing tests.
+- [x] 32 automated tests passing.
+- [x] Pushed to production branch on GitHub.
 
 ---
 

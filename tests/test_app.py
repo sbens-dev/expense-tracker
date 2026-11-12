@@ -49,7 +49,8 @@ def test_app_runs_in_cloud_mode(mock_fetch, mock_is_configured):
     assert len(at.exception) == 0
 
 
-def test_app_renders_delete_buttons_in_local_mode():
+@patch("src.database.is_cloud_configured", return_value=False)
+def test_app_renders_delete_buttons_in_local_mode(mock_is_configured):
     """Verify delete button appears for each purchase and can be clicked."""
     app_path = Path(__file__).resolve().parent.parent / "src" / "app.py"
     at = AppTest.from_file(str(app_path))
@@ -124,5 +125,24 @@ def test_app_budget_progress_meter():
     at.run()
     assert len(at.progress) == 0
     assert len(at.exception) == 0
+
+
+@patch("src.database.is_cloud_configured", return_value=False)
+def test_app_renders_category_chart(mock_is_configured):
+    """Verify app renders with category chart without exception."""
+    app_path = Path(__file__).resolve().parent.parent / "src" / "app.py"
+    at = AppTest.from_file(str(app_path))
+    at.run()
+    assert len(at.exception) == 0
+
+    # Verify when expenses are present in local preview, metric elements include the categories
+    category_metrics = [m.label for m in at.metric if m.label in ["Food", "Gas"]]
+    assert len(category_metrics) >= 1
+
+    # Verify empty state runs cleanly
+    at.session_state["expenses"] = []
+    at.run()
+    assert len(at.exception) == 0
+
 
 

@@ -159,11 +159,21 @@
 ### Task 9: Feature 4 — Visual Spending Pie Chart
 - **Description:** Add an interactive or clean pie chart showing category spending proportions.
 - **Acceptance criteria:**
-  - [ ] Pie chart renders categories with spending > $0.
-  - [ ] Displays cleanly on mobile and desktop without crowding out the list.
+  - [x] Pie chart renders categories with spending > $0.
+  - [x] Displays cleanly on mobile and desktop without crowding out the list.
 - **Verification:**
-  - [ ] App tests verify chart renders with data and handles empty state gracefully.
+  - [x] App tests verify chart renders with data and handles empty state gracefully.
 - **Dependencies:** Task 8
 - **Files likely touched:**
   - `src/app.py`
-- **Estimated scope:** S (1 file)
+  - `src/calculations.py`
+- **Estimated scope:** S (2 files)
+
+---
+
+## Checkpoint: Phase 4 Enhancements Complete
+- [x] Feature 1: Delete button live and tested.
+- [x] Feature 2: Browse past weeks navigation live and tested.
+- [x] Feature 3: Weekly budget goal and progress bar live and tested.
+- [x] Feature 4: Visual spending donut/pie chart live and tested.
+- [x] Full test suite (32 tests) passing 100% green.

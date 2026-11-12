@@ -156,3 +156,17 @@ def calculate_budget_status(total_spent: float, budget: float) -> dict:
         "status_text": status_text,
     }
 
+
+def prepare_chart_data(category_totals: dict[str, float]) -> list[dict]:
+    """
+    Prepares a clean list of active categories for chart visualization.
+    Filters out categories with $0.00 spent and sorts from highest spending to lowest.
+    """
+    active = [
+        {"category": cat, "amount": float(amt)}
+        for cat, amt in category_totals.items()
+        if amt > 0
+    ]
+    return sorted(active, key=lambda x: x["amount"], reverse=True)
+
+

@@ -7,6 +7,7 @@ from src.calculations import (
     calculate_weekly_total,
     calculate_category_breakdown,
     calculate_budget_status,
+    prepare_chart_data,
     format_currency,
 )
 
@@ -132,5 +133,30 @@ def test_calculate_budget_status_disabled_when_zero():
     """When budget is 0.0 or negative, budget tracking is inactive."""
     status = calculate_budget_status(total_spent=100.0, budget=0.0)
     assert status["is_active"] is False
+
+
+def test_prepare_chart_data():
+    """Verify chart data filters out zero categories and sorts highest first."""
+    totals = {
+        "Food": 50.0,
+        "Gas": 20.0,
+        "Groceries": 100.0,
+        "Bills": 0.0,
+        "Entertainment": 0.0,
+    }
+    chart_data = prepare_chart_data(totals)
+    assert len(chart_data) == 3
+    # Highest should be first
+    assert chart_data[0]["category"] == "Groceries"
+    assert chart_data[0]["amount"] == 100.0
+    assert chart_data[1]["category"] == "Food"
+    assert chart_data[2]["category"] == "Gas"
+
+
+def test_prepare_chart_data_all_zeros():
+    """Verify empty list returned when no spending exists."""
+    totals = {"Food": 0.0, "Gas": 0.0}
+    assert prepare_chart_data(totals) == []
+
 
 

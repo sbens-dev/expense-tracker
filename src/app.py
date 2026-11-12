@@ -20,6 +20,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import streamlit as st
+import pandas as pd
+import altair as alt
 
 try:
     from src.calculations import (
@@ -29,6 +31,7 @@ try:
         calculate_weekly_total,
         calculate_category_breakdown,
         calculate_budget_status,
+        prepare_chart_data,
         format_currency,
     )
     from src.database import (
@@ -45,6 +48,7 @@ except ModuleNotFoundError:
         calculate_weekly_total,
         calculate_category_breakdown,
         calculate_budget_status,
+        prepare_chart_data,
         format_currency,
     )
     from database import (  # type: ignore
@@ -284,18 +288,41 @@ with st.form("add_expense_form", clear_on_submit=True):
 st.divider()
 
 # ---------------------------------------------------------
-# Category Breakdown
+# Category Breakdown & Visual Chart
 # ---------------------------------------------------------
 st.subheader(f"📊 Spending by Category ({week_label})")
 
-# Show non-zero categories first, or friendly note if empty
-active_categories = {cat: amt for cat, amt in category_totals.items() if amt > 0}
+chart_items = prepare_chart_data(category_totals)
 
-if active_categories:
-    cat_cols = st.columns(min(len(active_categories), 4))
-    for i, (cat, amt) in enumerate(active_categories.items()):
+if chart_items:
+    # 1. Category metric cards
+    cat_cols = st.columns(min(len(chart_items), 4))
+    for i, item in enumerate(chart_items):
         col = cat_cols[i % len(cat_cols)]
-        col.metric(label=cat, value=format_currency(amt))
+        col.metric(label=item["category"], value=format_currency(item["amount"]))
+
+    # 2. Visual Donut / Pie Chart
+    df_chart = pd.DataFrame(chart_items)
+    df_chart["FormattedAmount"] = df_chart["amount"].apply(lambda x: format_currency(x))
+
+    donut_chart = (
+        alt.Chart(df_chart)
+        .mark_arc(innerRadius=45, stroke="#fff")
+        .encode(
+            theta=alt.Theta(field="amount", type="quantitative"),
+            color=alt.Color(
+                field="category",
+                type="nominal",
+                legend=alt.Legend(title="Category", orient="bottom"),
+            ),
+            tooltip=[
+                alt.Tooltip("category:N", title="Category"),
+                alt.Tooltip("FormattedAmount:N", title="Total Spent"),
+            ],
+        )
+        .properties(height=280)
+    )
+    st.altair_chart(donut_chart, use_container_width=True)
 else:
     st.write(f"No spending recorded in any category for {week_label.lower()}.")
 
