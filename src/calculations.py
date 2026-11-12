@@ -52,6 +52,17 @@ def get_week_start(target_date: Union[date, datetime, str]) -> date:
     return current - timedelta(days=days_since_sunday)
 
 
+def shift_week(base_week_start: date, offset_weeks: int) -> date:
+    """
+    Shifts a Sunday week start date backward or forward by whole weeks.
+    
+    Examples:
+    - shift_week(date(2026, 11, 8), -1) -> date(2026, 11, 1)  (1 week earlier)
+    - shift_week(date(2026, 11, 8), 1)  -> date(2026, 11, 15) (1 week later)
+    """
+    return base_week_start + timedelta(weeks=offset_weeks)
+
+
 def calculate_weekly_total(expenses: list[dict], week_start: date) -> float:
     """
     Calculates the grand total spent during the target week (Sunday through Saturday).

@@ -3,6 +3,7 @@ import pytest
 from src.calculations import (
     CATEGORIES,
     get_week_start,
+    shift_week,
     calculate_weekly_total,
     calculate_category_breakdown,
     format_currency,
@@ -91,3 +92,17 @@ def test_format_currency():
     assert format_currency(0) == "$0.00"
     assert format_currency(12.5) == "$12.50"
     assert format_currency(1234.567) == "$1,234.57"
+
+
+def test_shift_week():
+    """Verify moving backward and forward by weeks from a Sunday."""
+    base_sunday = date(2026, 11, 8)
+    # 1 week back
+    assert shift_week(base_sunday, -1) == date(2026, 11, 1)
+    # 2 weeks back
+    assert shift_week(base_sunday, -2) == date(2026, 10, 25)
+    # 1 week forward
+    assert shift_week(base_sunday, 1) == date(2026, 11, 15)
+    # 0 offset
+    assert shift_week(base_sunday, 0) == date(2026, 11, 8)
+

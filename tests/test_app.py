@@ -78,3 +78,34 @@ def test_app_delete_in_cloud_mode(mock_del, mock_fetch, mock_is_configured):
     delete_buttons[0].click().run()
     assert len(at.exception) == 0
     mock_del.assert_called_with(99)
+
+
+def test_app_week_navigation():
+    """Verify week navigation buttons shift the week offset."""
+    app_path = Path(__file__).resolve().parent.parent / "src" / "app.py"
+    at = AppTest.from_file(str(app_path))
+    at.run()
+    assert at.session_state["week_offset"] == 0
+
+    # Click Previous button
+    prev_button = [b for b in at.button if "Previous" in b.label][0]
+    prev_button.click().run()
+    assert at.session_state["week_offset"] == -1
+    assert len(at.exception) == 0
+
+    # Click Next button twice (moves from -1 to 0, then 0 to 1)
+    next_button = [b for b in at.button if "Next" in b.label][0]
+    next_button.click().run()
+    assert at.session_state["week_offset"] == 0
+
+    next_button = [b for b in at.button if "Next" in b.label][0]
+    next_button.click().run()
+    assert at.session_state["week_offset"] == 1
+    assert len(at.exception) == 0
+
+    # Click Current Week button to jump back to 0
+    current_btn = [b for b in at.button if "Current Week" in b.label][0]
+    current_btn.click().run()
+    assert at.session_state["week_offset"] == 0
+    assert len(at.exception) == 0
+

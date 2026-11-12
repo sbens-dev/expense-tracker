@@ -129,10 +129,10 @@
 ### Task 7: Feature 2 — Browse Past Weeks Navigation
 - **Description:** Provide navigation buttons (`◀ Previous Week`, `Current Week`, `Next Week ▶`) to view spending in previous or future weeks.
 - **Acceptance criteria:**
-  - [ ] Users can browse past weeks and see totals update for that specific 7-day period.
-  - [ ] A "Back to This Week" shortcut returns to the current date.
+  - [x] Users can browse past weeks and see totals update for that specific 7-day period.
+  - [x] A "Back to This Week" shortcut returns to the current date.
 - **Verification:**
-  - [ ] Automated tests verify date shifting and week boundaries.
+  - [x] Automated tests verify date shifting and week boundaries.
 - **Dependencies:** Task 6
 - **Files likely touched:**
   - `src/app.py`

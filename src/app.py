@@ -25,6 +25,7 @@ try:
     from src.calculations import (
         CATEGORIES,
         get_week_start,
+        shift_week,
         calculate_weekly_total,
         calculate_category_breakdown,
         format_currency,
@@ -39,6 +40,7 @@ except ModuleNotFoundError:
     from calculations import (  # type: ignore
         CATEGORIES,
         get_week_start,
+        shift_week,
         calculate_weekly_total,
         calculate_category_breakdown,
         format_currency,
@@ -79,6 +81,9 @@ if "expenses" not in st.session_state:
         },
     ]
 
+if "week_offset" not in st.session_state:
+    st.session_state.week_offset = 0
+
 # ---------------------------------------------------------
 # Cloud Connection & Status Banner
 # ---------------------------------------------------------
@@ -109,39 +114,67 @@ else:
     active_expenses = st.session_state.expenses
 
 # ---------------------------------------------------------
-# Header & Date Scope
+# Header & Week Navigation
 # ---------------------------------------------------------
 st.title("💳 Expense Tracker")
 
 today = date.today()
-week_start = get_week_start(today)
-week_end = week_start + timedelta(days=6)
+current_week_start = get_week_start(today)
+selected_week_start = shift_week(current_week_start, st.session_state.week_offset)
+selected_week_end = selected_week_start + timedelta(days=6)
+
+offset = st.session_state.week_offset
+if offset == 0:
+    week_label = "This Week"
+elif offset == -1:
+    week_label = "Last Week"
+elif offset < -1:
+    week_label = f"{abs(offset)} Weeks Ago"
+else:
+    week_label = f"{offset} Week{'s' if offset > 1 else ''} Ahead"
+
+# Clean navigation buttons
+nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
+with nav_col1:
+    if st.button("◀ Previous", use_container_width=True, help="Go back one week"):
+        st.session_state.week_offset -= 1
+        st.rerun()
+
+with nav_col2:
+    if st.button("Current Week", use_container_width=True, disabled=(offset == 0), help="Jump back to this week"):
+        st.session_state.week_offset = 0
+        st.rerun()
+
+with nav_col3:
+    if st.button("Next ▶", use_container_width=True, help="Go forward one week"):
+        st.session_state.week_offset += 1
+        st.rerun()
 
 st.caption(
-    f"📅 **Current Spending Week:** {week_start.strftime('%a, %b %d')} – {week_end.strftime('%a, %b %d, %Y')}"
+    f"📅 **{week_label}:** {selected_week_start.strftime('%a, %b %d')} – {selected_week_end.strftime('%a, %b %d, %Y')}"
 )
 
 # ---------------------------------------------------------
 # Weekly Summary Cards
 # ---------------------------------------------------------
-weekly_total = calculate_weekly_total(active_expenses, week_start)
-category_totals = calculate_category_breakdown(active_expenses, week_start)
+weekly_total = calculate_weekly_total(active_expenses, selected_week_start)
+category_totals = calculate_category_breakdown(active_expenses, selected_week_start)
 
-# Filter expenses belonging to this week
+# Filter expenses belonging to the selected week
 current_week_expenses = [
     item for item in active_expenses
-    if week_start <= date.fromisoformat(str(item["date"])[:10]) <= week_end
+    if selected_week_start <= date.fromisoformat(str(item["date"])[:10]) <= selected_week_end
 ]
 
 col1, col2 = st.columns(2)
 with col1:
     st.metric(
-        label="Total Spent This Week",
+        label=f"Total Spent ({week_label})",
         value=format_currency(weekly_total),
     )
 with col2:
     st.metric(
-        label="Items Logged This Week",
+        label=f"Items Logged ({week_label})",
         value=str(len(current_week_expenses)),
     )
 
@@ -222,7 +255,7 @@ st.divider()
 # ---------------------------------------------------------
 # Category Breakdown
 # ---------------------------------------------------------
-st.subheader("📊 Spending by Category")
+st.subheader(f"📊 Spending by Category ({week_label})")
 
 # Show non-zero categories first, or friendly note if empty
 active_categories = {cat: amt for cat, amt in category_totals.items() if amt > 0}
@@ -233,14 +266,14 @@ if active_categories:
         col = cat_cols[i % len(cat_cols)]
         col.metric(label=cat, value=format_currency(amt))
 else:
-    st.write("No spending recorded in any category yet this week.")
+    st.write(f"No spending recorded in any category for {week_label.lower()}.")
 
 st.divider()
 
 # ---------------------------------------------------------
 # Recent Expenses List
 # ---------------------------------------------------------
-st.subheader("📋 This Week's Purchases")
+st.subheader(f"📋 Purchases ({week_label})")
 
 if current_week_expenses:
     sorted_expenses = sorted(
