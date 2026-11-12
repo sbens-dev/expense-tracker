@@ -1,0 +1,17 @@
+# Private secrets and passwords (NEVER commit to git)
+.streamlit/secrets.toml
+.env
+.env.*
+
+# Internal agent workflows and skill definitions
+.agents/
+
+# Python caches and testing artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
