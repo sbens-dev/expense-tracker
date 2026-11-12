@@ -109,3 +109,20 @@ def test_app_week_navigation():
     assert at.session_state["week_offset"] == 0
     assert len(at.exception) == 0
 
+
+def test_app_budget_progress_meter():
+    """Verify budget progress bar renders and responds to budget adjustments."""
+    app_path = Path(__file__).resolve().parent.parent / "src" / "app.py"
+    at = AppTest.from_file(str(app_path))
+    at.run()
+    # Initial state should render a progress bar since default budget is $300
+    assert len(at.progress) == 1
+    assert len(at.exception) == 0
+
+    # Adjust budget in session_state to 0.0 to disable progress bar
+    at.session_state["weekly_budget"] = 0.0
+    at.run()
+    assert len(at.progress) == 0
+    assert len(at.exception) == 0
+
+

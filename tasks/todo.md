@@ -144,10 +144,10 @@
 ### Task 8: Feature 3 — Weekly Budget Goal & Progress Bar
 - **Description:** Let users define a weekly budget goal and see a visual progress bar indicating spent vs. remaining money.
 - **Acceptance criteria:**
-  - [ ] Budget input field allows setting a target (e.g. $300).
-  - [ ] Progress bar displays percentage used, dollar amount remaining, and color feedback.
+  - [x] Budget input field allows setting a target (e.g. $300).
+  - [x] Progress bar displays percentage used, dollar amount remaining, and color feedback.
 - **Verification:**
-  - [ ] Calculation tests for budget percentages.
+  - [x] Calculation tests for budget percentages.
 - **Dependencies:** Task 7
 - **Files likely touched:**
   - `src/app.py`

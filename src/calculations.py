@@ -114,3 +114,45 @@ def format_currency(amount: float) -> str:
              1234.567 -> '$1,234.57'
     """
     return f"${amount:,.2f}"
+
+
+def calculate_budget_status(total_spent: float, budget: float) -> dict:
+    """
+    Calculates progress toward a weekly spending target.
+    
+    Returns a dict with:
+    - is_active: True if a budget greater than $0 is configured.
+    - percentage: A number between 0.0 and 1.0 for progress bars.
+    - remaining: The dollar amount left (negative if over budget).
+    - is_over: True if total_spent exceeds budget.
+    - status_text: A friendly human summary.
+    """
+    if budget <= 0:
+        return {
+            "is_active": False,
+            "percentage": 0.0,
+            "remaining": 0.0,
+            "is_over": False,
+            "status_text": "No weekly budget set.",
+        }
+
+    remaining = round(budget - total_spent, 2)
+    is_over = total_spent > budget
+    percentage = min(1.0, max(0.0, round(total_spent / budget, 4)))
+
+    if is_over:
+        over_by = abs(remaining)
+        status_text = f"⚠️ You have exceeded your {format_currency(budget)} budget by {format_currency(over_by)}."
+    elif remaining == 0:
+        status_text = f"🎯 You have reached your exact {format_currency(budget)} budget."
+    else:
+        status_text = f"🎯 Spent {format_currency(total_spent)} of {format_currency(budget)} ({format_currency(remaining)} left to spend)."
+
+    return {
+        "is_active": True,
+        "percentage": percentage,
+        "remaining": remaining,
+        "is_over": is_over,
+        "status_text": status_text,
+    }
+

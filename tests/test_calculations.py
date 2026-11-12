@@ -6,6 +6,7 @@ from src.calculations import (
     shift_week,
     calculate_weekly_total,
     calculate_category_breakdown,
+    calculate_budget_status,
     format_currency,
 )
 
@@ -105,4 +106,31 @@ def test_shift_week():
     assert shift_week(base_sunday, 1) == date(2026, 11, 15)
     # 0 offset
     assert shift_week(base_sunday, 0) == date(2026, 11, 8)
+
+
+def test_calculate_budget_status_under_budget():
+    """Verify budget math when user is under their weekly target."""
+    status = calculate_budget_status(total_spent=150.0, budget=300.0)
+    assert status["is_active"] is True
+    assert status["percentage"] == 0.5
+    assert status["remaining"] == 150.0
+    assert status["is_over"] is False
+    assert "$150.00 left" in status["status_text"]
+
+
+def test_calculate_budget_status_over_budget():
+    """Verify budget math when spending exceeds target."""
+    status = calculate_budget_status(total_spent=350.0, budget=300.0)
+    assert status["is_active"] is True
+    assert status["percentage"] == 1.0
+    assert status["remaining"] == -50.0
+    assert status["is_over"] is True
+    assert "exceeded" in status["status_text"]
+
+
+def test_calculate_budget_status_disabled_when_zero():
+    """When budget is 0.0 or negative, budget tracking is inactive."""
+    status = calculate_budget_status(total_spent=100.0, budget=0.0)
+    assert status["is_active"] is False
+
 

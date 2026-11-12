@@ -28,6 +28,7 @@ try:
         shift_week,
         calculate_weekly_total,
         calculate_category_breakdown,
+        calculate_budget_status,
         format_currency,
     )
     from src.database import (
@@ -43,6 +44,7 @@ except ModuleNotFoundError:
         shift_week,
         calculate_weekly_total,
         calculate_category_breakdown,
+        calculate_budget_status,
         format_currency,
     )
     from database import (  # type: ignore
@@ -83,6 +85,9 @@ if "expenses" not in st.session_state:
 
 if "week_offset" not in st.session_state:
     st.session_state.week_offset = 0
+
+if "weekly_budget" not in st.session_state:
+    st.session_state.weekly_budget = 300.0
 
 # ---------------------------------------------------------
 # Cloud Connection & Status Banner
@@ -177,6 +182,32 @@ with col2:
         label=f"Items Logged ({week_label})",
         value=str(len(current_week_expenses)),
     )
+
+# ---------------------------------------------------------
+# Weekly Budget Progress Meter
+# ---------------------------------------------------------
+budget_status = calculate_budget_status(weekly_total, st.session_state.weekly_budget)
+
+if budget_status["is_active"]:
+    st.progress(
+        value=budget_status["percentage"],
+        text=budget_status["status_text"],
+    )
+
+# Adjust or customize weekly budget goal
+with st.expander("🎯 Set Weekly Budget Goal"):
+    new_budget = st.number_input(
+        "Weekly Budget ($)",
+        min_value=0.0,
+        max_value=100000.0,
+        value=float(st.session_state.weekly_budget),
+        step=25.0,
+        format="%.2f",
+        help="Set your weekly spending target (set to $0.00 to hide the budget bar)",
+    )
+    if new_budget != st.session_state.weekly_budget:
+        st.session_state.weekly_budget = float(new_budget)
+        st.rerun()
 
 st.divider()
 
